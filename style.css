@@ -285,3 +285,55 @@ body {
     font-weight: 600;
     font-size: 12px;
 }
+
+.mr-filter {
+    position: absolute;
+    width: 401px;
+    height: 600px;
+    background: rgba(132, 132, 132, 0.74);
+    z-index: 998;
+}
+.mr-form-memo {
+    background-color: var(--bg);
+    height: 518px;
+    width: 380px;
+    left: 10px;
+    position: absolute;
+    z-index: 999;
+    top: 64px;
+    border-radius: 10px;
+}
+
+.form-textarea {
+    width: 290px;
+    height: 284px;
+    left: 55px;
+    top: 93px;
+    border: 2px dashed #909090;
+    position: absolute;
+    border-radius: 10px;
+}
+.form-textarea textarea {
+    width: 100%;
+    padding: 0px;
+    border: none;
+    height: 100%;
+}
+.form-title {
+    position: absolute;
+    width: 290px;
+    height: 20px;
+    left: 55px;
+    top: 53px;
+}
+.form-title input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid;
+    font-family: 'Epilogue';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    color: #909090;
+    line-height: 15px;
+}

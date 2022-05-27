@@ -1,14 +1,3 @@
-/*var div = document.querySelector('#div')
-var title = document.querySelector('.value')*/
-
-/*div.addEventListener("click", function() {
-    console.log("fe")
-}, false);*/
-
-/*function test() {
-    console.log(input.value)
-}*/
-
 //input.onblur = test()
 
 //initInputs()
@@ -53,15 +42,18 @@ function initInputs() {
 }*/
 
 
-const btn_dark_mode = document.querySelector('.mr-dark-mode')
-const darkModeBtn = document.querySelector('.mr-dark-mode')
-const root = document.documentElement 
-var dark_mode = false
 
-btn_dark_mode.addEventListener('click', () => {
-    console.log('efze')
-    if (dark_mode) {
-        dark_mode = false
+
+
+const btnDarkMode = document.querySelector('.mr-dark-mode')
+const darkModeBtn = document.querySelector('.mr-dark-mode')
+const btnAddMemo = document.querySelector('.mr-btn')
+const root = document.documentElement 
+var darkMode = false
+
+btnDarkMode.addEventListener('click', () => {
+    if (darkMode) {
+        darkMode = false
 
         darkModeBtn.innerHTML =
         '<svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">'
@@ -81,7 +73,7 @@ btn_dark_mode.addEventListener('click', () => {
 
         switchProperties(styleToChange)
     } else {
-        dark_mode = true
+        darkMode = true
 
         darkModeBtn.innerHTML =
         '<svg width="43" height="43" viewBox="0 0 43 43" fill="none" xmlns="http://www.w3.org/2000/svg">'
@@ -103,12 +95,19 @@ btn_dark_mode.addEventListener('click', () => {
     }
 })
 
-
 function switchProperties(properties) {
     for (let el in properties) {
         root.style.setProperty('--' + el, properties[el])
     }
 }
+
+btnAddMemo.addEventListener('click', () => {
+    console.log("fe")
+})
+
+
+
+
 
 
 
