@@ -1,0 +1,11 @@
+{
+    "manifest_version": 3,
+    "name": "Memo Riz",
+    "description": "Mémo simple est rapide",
+    "version": "0.1",
+    "action": {
+        "default_icon": {},
+        "default_title": "Clique pour memorizer",
+        "default_popup": "popup.html"
+    }
+}

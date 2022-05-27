@@ -1,0 +1,287 @@
+body {
+    width: 400px;
+    height: 600px;
+    background-color: rgb(255, 255, 255);
+    margin: 0;
+    font-family: 'Epilogue', sans-serif;
+}
+
+:root {
+    --bg: #FFFFFF;
+    --textColor: #000000;
+    --bgMemo: #E5E7FE;
+    --bgScroll: #d9d9da;
+    --bottomFaide: linear-gradient(180deg, rgba(151, 186, 255, 0) 0%, rgba(137, 146, 255, 0.67) 100%);
+    --imgColor: url(images/rice.png);
+}
+
+
+.crl-1 {
+    position: absolute;
+    width: 17.67px;
+    height: 17.67px;
+    left: 4.33px;
+    top: -3px;
+    border-radius: 100px;
+    background: #FFFFFF;
+}
+.crl-2 {
+    position: absolute;
+    width: 17.67px;
+    height: 17.67px;
+    border-radius: 100px;
+
+    background: #9A9A9A;
+}
+.img {
+    position: absolute;
+    width: 30px;
+    height: 30px;   
+    background: var(--imgColor);
+    background-size: cover;
+}.text {
+    position: absolute;
+    width: 124px;
+    height: 25px;
+    left: 35px;
+    top: 9px;
+    font-family: 'Epilogue';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 25px;
+}
+.rct-2 {
+    position: absolute;
+    width: 6px;
+    height: 40px;
+    left: 1px;
+    
+    /* Fll 1 */
+    
+    background: #3243D7;
+    border-radius: 10px;
+}
+.rct-1 {
+    position: absolute;
+    width: 8px;
+    height: 414px;
+    
+    background: #D9D9D9;
+    border-radius: 10px;
+}
+.btn-bloc {
+    position: absolute;
+    width: 350px;
+    height: 63px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: space-evenly;
+
+    /* Fll 1 */
+    
+    background: #3243D7;
+    border-radius: 10px;
+}
+.btn-text {
+    transition: 0.3s;
+    
+    font-family: 'Epilogue';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 15px;
+    
+    color: #FFFFFF;
+}
+
+
+
+
+.mr-contener {
+    position: absolute;
+    width: 400px;
+    height: 600px;
+
+    background: var(--bg);
+    color: var(--textColor);
+    transition: 0.3s;
+    /*padding: 10px;*/
+}
+
+.mr-dark-mode {
+    position: absolute;
+    width: 21px;
+    height: 20px;
+    left: 25px;
+    top: 29px;
+    cursor: pointer;
+    border-radius: 100px;
+
+    /*position: absolute;
+    left: 20px;
+    top: 16px;*/
+}
+
+.mr-logo {
+    position: absolute;
+    width: 148px;
+    height: 34px;
+    left: 126px;
+    top: 21px;
+
+    /*position: absolute;
+    left: 30%;
+    display: flex;
+    align-content: center;
+    align-items: flex-end;*/
+}
+
+.mr-logo img {
+    /*width: 30px;
+    margin-right: 10px;*/
+}
+.mr-logo div {
+    /*font-family: 'Epilogue';
+    font-style: normal;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 25px;*/
+}
+
+.mr-scroll {
+    position: absolute;
+    width: 8px;
+    height: 414px;
+    left: 386px;
+    top: 85px;
+
+    /*background-color: #E5E7FE;
+    width: 358px;
+    height: 87px;
+    left: 21px;
+    top: 85px;*/
+}
+
+.mr-btn {
+    position: absolute;
+    width: 350px;
+    height: 63px;
+    left: 26px;
+    top: 499px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.mr-btn:hover .btn-bloc{
+    width: 370px;
+}
+.mr-btn:hover {
+    left: 16px
+}
+
+.mr-fayde {
+    position: absolute;
+    width: 400px;
+    height: 139px;
+    left: 0px;
+    top: 461px;
+
+    /* Fd 1 */
+
+    background: var(--bottomFaide);
+}
+
+.mr-memo {
+    /*border: 1px solid red;*/
+    width: 350px;
+    height: 490px;
+    left: 25px;
+    top: 85px;
+    position: absolute;
+
+    overflow-x: hidden;
+    padding-right: 19px;
+    overflow-y: scroll;
+    scrollbar-color: rebeccapurple green;
+    scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+    width: 8px;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #3243d7;
+    border-radius: 10px;
+}
+
+  /* Track */
+::-webkit-scrollbar-track {
+    background-color: var(--bgScroll);
+    border-radius: 10px;
+  }
+
+.memo-container {
+    /*border: 1px solid green;*/
+    /*display: flex;*/
+    background-color: var(--bgMemo);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: 350px;
+    padding-bottom: 2px;
+    cursor: pointer;
+}
+
+.container-center {
+    display: flex;
+    align-items: flex-end;
+}
+
+.memo-statut {
+    width: 15px;
+    height: 15px;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+.lock {
+    background: url(images/lock.png);
+    background-size: cover;
+}
+.unlock {
+    background: url(images/unlock.png);
+    background-size: cover;
+}
+
+.memo-title {
+    font-style: italic;
+    font-weight: 600;
+    font-size: 15px;
+    width: 280px;
+    margin-left: 5px;
+}
+
+.memo-param {
+    display: flex;
+    /* position: absolute; */
+    /* right: 5px; */
+    /* top: 17px;*/
+}
+
+.memo-param div {
+    width: 5px;
+    height: 5px;
+    background-color: var(--textColor);
+    border-radius: 100px;
+    margin-right: 5px;
+}
+
+.memo-text-area {
+    margin-top: 10px;
+    margin-left: 11px;
+    margin-bottom: 5px;
+    margin-right: 11px;
+    font-weight: 600;
+    font-size: 12px;
+}
