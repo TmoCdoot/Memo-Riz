@@ -48,8 +48,12 @@ function initInputs() {
 const btnDarkMode = document.querySelector('.mr-dark-mode')
 const darkModeBtn = document.querySelector('.mr-dark-mode')
 const btnAddMemo = document.querySelector('.mr-btn')
+const formMemo = document.querySelector('.mr-form-memo')
+const filterMemo = document.querySelector('.mr-filter')
+const btnCloseFormMemo = document.querySelector('.form-close')
 const root = document.documentElement 
 var darkMode = false
+var showFormMemo = false
 
 btnDarkMode.addEventListener('click', () => {
     if (darkMode) {
@@ -66,7 +70,9 @@ btnDarkMode.addEventListener('click', () => {
             bgMemo: '#E5E7FE',
             bgScroll: '#d9d9da',
             bottomFaide: 'linear-gradient(180deg, rgba(151, 186, 255, 0) 0%, rgba(137, 146, 255, 0.67) 100%)',
-            imgColor: 'url(images/rice.png)'
+            imgColor: 'url(images/rice.png)',
+            textColorForm: '#909090',
+            bgFilter: 'rgba(132, 132, 132, 0.74)'
         }
         darkModeBtn.style.top = "29px"
         darkModeBtn.style.left = "25px"
@@ -86,7 +92,9 @@ btnDarkMode.addEventListener('click', () => {
             bgMemo: '#2A2B31',
             bgScroll: '#565656',
             bottomFaide: 'linear-gradient(180deg, rgba(0, 13, 140, 0) 0%, rgba(7, 11, 51, 0.67) 100%)',
-            imgColor: 'url(images/rice-white.png)'
+            imgColor: 'url(images/rice-white.png)',
+            textColorForm: '#E5E7FE',
+            bgFilter: 'rgba(0, 0, 0, 0.69)'
         }
         darkModeBtn.style.top = "15px"
         darkModeBtn.style.left = "20px"
@@ -103,7 +111,24 @@ function switchProperties(properties) {
 
 btnAddMemo.addEventListener('click', () => {
     console.log("fe")
+    showMemo()
 })
+
+btnCloseFormMemo.addEventListener('click', () => {
+    showMemo()
+})
+
+function showMemo() {
+    if (showFormMemo) {
+        filterMemo.style.visibility = "collapse"
+        formMemo.style.visibility = "collapse"
+        showFormMemo = false
+    } else {
+        filterMemo.style.visibility = "initial"
+        formMemo.style.visibility = "initial"
+        showFormMemo = true
+    }
+}
 
 
 
