@@ -338,6 +338,7 @@ body {
     height: 95%;
     resize: none;
     background-color: var(--bg);
+    color: var(--textColorForm);
 }
 .form-title {
     position: absolute;
@@ -364,7 +365,7 @@ body {
     width: 290px;
     height: 24px;
     left: 36px;
-    top: 403px;
+    top: 398px;
     display: flex;
     align-items: center;
 }

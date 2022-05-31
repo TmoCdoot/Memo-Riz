@@ -51,9 +51,22 @@ const btnAddMemo = document.querySelector('.mr-btn')
 const formMemo = document.querySelector('.mr-form-memo')
 const filterMemo = document.querySelector('.mr-filter')
 const btnCloseFormMemo = document.querySelector('.form-close')
+const btnSendMemo = document.querySelector('.form-btn')
+const memoContener = document.querySelector('.mr-memo')
+
+const inputTitle = document.querySelector('.form-title-input')
+const inputTextArea = document.querySelector('.form-textarea-input')
+const inputLock = document.querySelector('.form-lock-input')
+
 const root = document.documentElement 
+
 var darkMode = false
 var showFormMemo = false
+var isCheck = true
+var tabMemo = []
+
+getMemoLocalStorage()
+addMemoOnHtml(tabMemo)
 
 btnDarkMode.addEventListener('click', () => {
     if (darkMode) {
@@ -110,7 +123,6 @@ function switchProperties(properties) {
 }
 
 btnAddMemo.addEventListener('click', () => {
-    console.log("fe")
     showMemo()
 })
 
@@ -118,10 +130,42 @@ btnCloseFormMemo.addEventListener('click', () => {
     showMemo()
 })
 
+
+
+inputLock.addEventListener('click', () => {
+    if (isCheck) {
+        isCheck = false
+    } else {
+        isCheck = true
+    }
+})
+
+
+btnSendMemo.addEventListener('click', () => {
+    console.log(inputTitle.value)
+    console.log(inputTextArea.value)
+    console.log(isCheck)
+
+    const memoObject = {
+        title: inputTitle.value,
+        data: inputTextArea.value,
+        isLock: isCheck,
+      }
+
+    localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
+})
+
+//show memo form
 function showMemo() {
     if (showFormMemo) {
         filterMemo.style.visibility = "collapse"
         formMemo.style.visibility = "collapse"
+
+        inputTitle.value = ""
+        inputTextArea.value = ""
+        inputLock.checked = true
+        isCheck = true
+
         showFormMemo = false
     } else {
         filterMemo.style.visibility = "initial"
@@ -129,6 +173,66 @@ function showMemo() {
         showFormMemo = true
     }
 }
+
+//get memo local storage
+function getMemoLocalStorage() {
+    tabMemo = []
+    for (var i = 0; i < localStorage.length; i++){
+        tabMemo.push(JSON.parse(localStorage.getItem(localStorage.key(i))))
+    }
+}
+
+//show memo
+function addMemoOnHtml(tabMemo) {
+    console.log(tabMemo)
+
+    for (var i = 0; i < tabMemo.length; i++){
+        let divContener = document.createElement('div')
+        let divContenerCenter = document.createElement('div')
+        let divMemoStatut = document.createElement('div')
+        let divMemoTitle = document.createElement('div')
+        let divMemoParam = document.createElement('div')
+        let divCrl1 = document.createElement('div')
+        let divCrl2 = document.createElement('div')
+        let divCrl3 = document.createElement('div')
+        let divMemoText = document.createElement('div')
+
+
+        divContener.className = "memo-container";
+        divContenerCenter.className = "container-center"
+        divMemoStatut.className = "memo-statut lock"
+        divMemoTitle.className = "memo-title"
+        divMemoParam.className = "memo-param"
+        divCrl1.className = "param-crl-1"
+        divCrl2.className = "param-crl-2"
+        divCrl3.className = "param-crl-3"
+        divMemoText.className = "memo-text-area"
+
+        divMemoParam.appendChild(divCrl1)
+        divMemoParam.appendChild(divCrl2)
+        divMemoParam.appendChild(divCrl3)
+        let title = document.createTextNode(tabMemo[i].title)
+        console.log(title)
+        divMemoTitle.appendChild(title)
+        let text = document.createTextNode(tabMemo[i].data)
+        divMemoText.appendChild(text)
+
+        divContenerCenter.appendChild(divMemoStatut)
+        divContenerCenter.appendChild(divMemoTitle)
+        divContenerCenter.appendChild(divMemoParam)
+
+        divContener.appendChild(divContenerCenter, divMemoText)
+        divContener.appendChild(divMemoText)
+
+
+        //var memo = '<div class="memo-container"> <div class="container-center"> <div class="memo-statut lock"></div> <div class="memo-title">' + tabMemo[i].title + '</div><div class="memo-param"> <div class="param-crl-1"></div> <div class="param-crl-2"></div> <div class="param-crl-3"></div></div></div> <div class="memo-text-area">' + tabMemo[i].data + '</div></div>'
+        memoContener.appendChild(divContener)
+    }
+    
+    memoContener
+}
+
+
 
 
 
