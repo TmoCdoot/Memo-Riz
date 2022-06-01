@@ -58,6 +58,7 @@ const inputTitle = document.querySelector('.form-title-input')
 const inputTextArea = document.querySelector('.form-textarea-input')
 const inputLock = document.querySelector('.form-lock-input')
 
+
 const root = document.documentElement 
 
 var darkMode = false
@@ -67,6 +68,12 @@ var tabMemo = []
 
 getMemoLocalStorage()
 addMemoOnHtml(tabMemo)
+const memo = document.querySelectorAll('.memo-container').forEach(item => {
+    item.addEventListener('click', event => {
+        console.log(event)
+      console.log(event.path[0].id)
+    })
+  })
 
 btnDarkMode.addEventListener('click', () => {
     if (darkMode) {
@@ -130,8 +137,6 @@ btnCloseFormMemo.addEventListener('click', () => {
     showMemo()
 })
 
-
-
 inputLock.addEventListener('click', () => {
     if (isCheck) {
         isCheck = false
@@ -142,18 +147,17 @@ inputLock.addEventListener('click', () => {
 
 
 btnSendMemo.addEventListener('click', () => {
-    console.log(inputTitle.value)
-    console.log(inputTextArea.value)
-    console.log(isCheck)
-
     const memoObject = {
         title: inputTitle.value,
         data: inputTextArea.value,
         isLock: isCheck,
-      }
-
+    }
     localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
 })
+
+/*memo.addEventListener('click', (e) => {
+    console.log(e)
+})*/
 
 //show memo form
 function showMemo() {
@@ -199,14 +203,20 @@ function addMemoOnHtml(tabMemo) {
 
 
         divContener.className = "memo-container";
+        divContener.id = i
         divContenerCenter.className = "container-center"
+        divContenerCenter.id = i
         divMemoStatut.className = "memo-statut lock"
+        divMemoStatut.id = i
         divMemoTitle.className = "memo-title"
+        divMemoTitle.id = i
         divMemoParam.className = "memo-param"
+        divMemoParam.id = i
         divCrl1.className = "param-crl-1"
         divCrl2.className = "param-crl-2"
         divCrl3.className = "param-crl-3"
         divMemoText.className = "memo-text-area"
+        divMemoText.id = i
 
         divMemoParam.appendChild(divCrl1)
         divMemoParam.appendChild(divCrl2)
@@ -224,12 +234,12 @@ function addMemoOnHtml(tabMemo) {
         divContener.appendChild(divContenerCenter, divMemoText)
         divContener.appendChild(divMemoText)
 
-
-        //var memo = '<div class="memo-container"> <div class="container-center"> <div class="memo-statut lock"></div> <div class="memo-title">' + tabMemo[i].title + '</div><div class="memo-param"> <div class="param-crl-1"></div> <div class="param-crl-2"></div> <div class="param-crl-3"></div></div></div> <div class="memo-text-area">' + tabMemo[i].data + '</div></div>'
         memoContener.appendChild(divContener)
+
+        console.log(i)
     }
-    
-    memoContener
+
+
 }
 
 
