@@ -15,6 +15,7 @@ body {
     --imgColor: url(images/rice.png);
     --textColorForm: #909090;
     --bgFilter: rgba(132, 132, 132, 0.74);
+    --imgEditColor: url(images/pencil.png)
 }
 
 
@@ -232,7 +233,7 @@ body {
     margin-bottom: 20px;
     width: 350px;
     padding-bottom: 2px;
-    cursor: pointer;
+
 }
 
 .container-center {
@@ -266,9 +267,7 @@ body {
 
 .memo-param {
     display: flex;
-    /* position: absolute; */
-    /* right: 5px; */
-    /* top: 17px;*/
+    cursor: pointer;
 }
 
 .memo-param div {
@@ -277,6 +276,7 @@ body {
     background-color: var(--textColor);
     border-radius: 100px;
     margin-right: 5px;
+    pointer-events: none;
 }
 
 .memo-text-area {
@@ -286,9 +286,10 @@ body {
     margin-right: 11px;
     font-weight: 600;
     font-size: 12px;
+    cursor: pointer;
 }
 
-.mr-filter {
+.mr-filter, .mr-filter-view {
     position: absolute;
     width: 401px;
     height: 600px;
@@ -296,7 +297,7 @@ body {
     z-index: 998;
     visibility: collapse;
 }
-.mr-form-memo {
+.mr-form-memo, .mr-view-memo {
     background-color: var(--bg);
     height: 518px;
     width: 360px;
@@ -310,7 +311,7 @@ body {
     visibility: collapse;
 }
 
-.form-close {
+.form-close, .view-close {
     background-image: url(images/close.png);
     width: 30px;
     background-size: cover;
@@ -319,7 +320,7 @@ body {
     cursor: pointer;
 }
 
-.form-textarea {
+.form-textarea, .view-textarea {
     width: 290px;
     height: 284px;
     left: 36px;
@@ -331,6 +332,16 @@ body {
     align-items: center;
     justify-content: center;
 }
+.view-textarea {
+    height: 390px;
+    display: block;
+    left: 30px;
+    padding: 5px;
+    color: var(--textColorForm);
+    font-family: 'Epilogue';
+    font-style: normal;
+    font-weight: 600;
+}
 .form-textarea textarea {
     width: 95%;
     padding: 0px;
@@ -340,14 +351,14 @@ body {
     background-color: var(--bg);
     color: var(--textColorForm);
 }
-.form-title {
+.form-title, .view-title {
     position: absolute;
     width: 290px;
     height: 20px;
     left: 36px;
     top: 53px;
 }
-.form-title input {
+.form-title input, .view-title {
     width: 100%;
     border: none;
     border-bottom: 1px solid;
@@ -358,6 +369,21 @@ body {
     color: var(--textColorForm);
     line-height: 15px;
     background-color: var(--bg);
+}
+.view-title {
+    background: none;
+    border: none;
+    left: 30px;
+}
+
+.view-edit {
+    background-image: var(--imgEditColor);
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    position: absolute;
+    right: 30px;
+    top: 18px;
 }
 
 .form-lock {

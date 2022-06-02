@@ -49,10 +49,19 @@ const btnDarkMode = document.querySelector('.mr-dark-mode')
 const darkModeBtn = document.querySelector('.mr-dark-mode')
 const btnAddMemo = document.querySelector('.mr-btn')
 const formMemo = document.querySelector('.mr-form-memo')
+const viewMemo = document.querySelector('.mr-view-memo')
 const filterMemo = document.querySelector('.mr-filter')
+const viewTextarea = document.querySelector('.view-textarea')
+const filterMemoView = document.querySelector('.mr-filter-view')
 const btnCloseFormMemo = document.querySelector('.form-close')
+const btnCloseViewMemo = document.querySelector('.view-close')
 const btnSendMemo = document.querySelector('.form-btn')
+const btnBlocAddMemo = document.querySelector('.btn-bloc')
+const btnTextAddMemo = document.querySelector('.btn-text')
 const memoContener = document.querySelector('.mr-memo')
+const viewTitle = document.querySelector('.view-title')
+const viewEdit = document.querySelector('.view-edit')
+
 
 const inputTitle = document.querySelector('.form-title-input')
 const inputTextArea = document.querySelector('.form-textarea-input')
@@ -68,12 +77,11 @@ var tabMemo = []
 
 getMemoLocalStorage()
 addMemoOnHtml(tabMemo)
-const memo = document.querySelectorAll('.memo-container').forEach(item => {
-    item.addEventListener('click', event => {
-        console.log(event)
-      console.log(event.path[0].id)
-    })
-  })
+activeInteract()
+
+
+
+
 
 btnDarkMode.addEventListener('click', () => {
     if (darkMode) {
@@ -92,7 +100,8 @@ btnDarkMode.addEventListener('click', () => {
             bottomFaide: 'linear-gradient(180deg, rgba(151, 186, 255, 0) 0%, rgba(137, 146, 255, 0.67) 100%)',
             imgColor: 'url(images/rice.png)',
             textColorForm: '#909090',
-            bgFilter: 'rgba(132, 132, 132, 0.74)'
+            bgFilter: 'rgba(132, 132, 132, 0.74)',
+            imgEditColor: 'url(images/pencil.png)'
         }
         darkModeBtn.style.top = "29px"
         darkModeBtn.style.left = "25px"
@@ -114,7 +123,8 @@ btnDarkMode.addEventListener('click', () => {
             bottomFaide: 'linear-gradient(180deg, rgba(0, 13, 140, 0) 0%, rgba(7, 11, 51, 0.67) 100%)',
             imgColor: 'url(images/rice-white.png)',
             textColorForm: '#E5E7FE',
-            bgFilter: 'rgba(0, 0, 0, 0.69)'
+            bgFilter: 'rgba(0, 0, 0, 0.69)',
+            imgEditColor: 'url(images/pencil-white.png)'
         }
         darkModeBtn.style.top = "15px"
         darkModeBtn.style.left = "20px"
@@ -123,18 +133,20 @@ btnDarkMode.addEventListener('click', () => {
     }
 })
 
-function switchProperties(properties) {
-    for (let el in properties) {
-        root.style.setProperty('--' + el, properties[el])
-    }
-}
+viewEdit.addEventListener('click', event => {
+    showMemo("preloadEdit", event.path[0].id)
+})
 
 btnAddMemo.addEventListener('click', () => {
-    showMemo()
+    showMemo("form")
 })
 
 btnCloseFormMemo.addEventListener('click', () => {
-    showMemo()
+    showMemo("form")
+})
+
+btnCloseViewMemo.addEventListener('click', () => {
+    showMemo("view")
 })
 
 inputLock.addEventListener('click', () => {
@@ -145,37 +157,135 @@ inputLock.addEventListener('click', () => {
     }
 })
 
+btnSendMemo.addEventListener('click', event => {
 
-btnSendMemo.addEventListener('click', () => {
-    const memoObject = {
-        title: inputTitle.value,
-        data: inputTextArea.value,
-        isLock: isCheck,
+    if (event.path[0].id != undefined) {
+
+        localStorage.removeItem(tabMemo[event.path[0].id].title)
+        const memoObject = {
+            title: inputTitle.value,
+            data: inputTextArea.value,
+            isLock: isCheck,
+        }
+        localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
+        getMemoLocalStorage()
+        addMemoOnHtml(tabMemo)
+        activeInteract()
+        showMemo('form')
+
+    } else {
+
+        const memoObject = {
+            title: inputTitle.value,
+            data: inputTextArea.value,
+            isLock: isCheck,
+        }
+        localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
+        getMemoLocalStorage()
+        addMemoOnHtml(tabMemo)
+        activeInteract()
+        showMemo('form')
+
     }
-    localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
+    
 })
+
+
 
 /*memo.addEventListener('click', (e) => {
     console.log(e)
 })*/
 
+//refresh interaction
+function activeInteract() {
+
+    document.querySelectorAll('.memo-text-area').forEach(item => {
+        item.addEventListener('click', event => {
+
+            showMemo("view")
+            const index = event.path[0].id
+            const memo = tabMemo[index]
+            viewEdit.id = index
+            viewTitle.innerHTML = memo.title
+            viewTextarea.innerHTML = memo.data
+
+        })
+    })
+    
+    document.querySelectorAll('.memo-param').forEach(item => {
+        item.addEventListener('click', event => {
+            console.log(event)
+        })
+    })
+}
+
+//switch mode
+function switchProperties(properties) {
+    for (let el in properties) {
+        root.style.setProperty('--' + el, properties[el])
+    }
+}
+
 //show memo form
-function showMemo() {
-    if (showFormMemo) {
-        filterMemo.style.visibility = "collapse"
-        formMemo.style.visibility = "collapse"
+function showMemo(type, id) {
 
-        inputTitle.value = ""
-        inputTextArea.value = ""
-        inputLock.checked = true
-        isCheck = true
+    if (type == "form") {
 
+        if (showFormMemo) {
+
+            filterMemo.style.visibility = "collapse"
+            formMemo.style.visibility = "collapse"
+            inputTitle.value = ""
+            inputTextArea.value = ""
+            inputLock.checked = true
+            isCheck = true
+            showFormMemo = false
+
+        } else {
+
+            filterMemo.style.visibility = "initial"
+            formMemo.style.visibility = "initial"
+            showFormMemo = true
+
+        }
+
+    } else if (type == "preloadEdit") {
+
+        filterMemoView.style.visibility = "collapse"
+        viewMemo.style.visibility = "collapse"
         showFormMemo = false
-    } else {
+        showMemo("goEdit", id)
+
+    } else if (type == "goEdit") {
+
+        btnSendMemo.id = id
+        btnBlocAddMemo.id = id
+        btnTextAddMemo.id = id
+        inputTitle.value = tabMemo[id].title
+        inputTextArea.value = tabMemo[id].data
+        if (tabMemo[id].isLock == true) {
+            inputLock.checked = true
+        } else {
+            inputLock.checked = false
+        }
         filterMemo.style.visibility = "initial"
         formMemo.style.visibility = "initial"
         showFormMemo = true
+
+    } else {
+
+        if (showFormMemo) {
+            filterMemoView.style.visibility = "collapse"
+            viewMemo.style.visibility = "collapse"
+            showFormMemo = false
+        } else {
+            filterMemoView.style.visibility = "initial"
+            viewMemo.style.visibility = "initial"
+            showFormMemo = true
+        }
+
     }
+    
 }
 
 //get memo local storage
@@ -188,7 +298,12 @@ function getMemoLocalStorage() {
 
 //show memo
 function addMemoOnHtml(tabMemo) {
-    console.log(tabMemo)
+
+    while (memoContener.firstChild) { 
+
+        memoContener.removeChild(memoContener.firstChild)
+        
+    }
 
     for (var i = 0; i < tabMemo.length; i++){
         let divContener = document.createElement('div')
@@ -222,7 +337,6 @@ function addMemoOnHtml(tabMemo) {
         divMemoParam.appendChild(divCrl2)
         divMemoParam.appendChild(divCrl3)
         let title = document.createTextNode(tabMemo[i].title)
-        console.log(title)
         divMemoTitle.appendChild(title)
         let text = document.createTextNode(tabMemo[i].data)
         divMemoText.appendChild(text)
@@ -236,7 +350,6 @@ function addMemoOnHtml(tabMemo) {
 
         memoContener.appendChild(divContener)
 
-        console.log(i)
     }
 
 
