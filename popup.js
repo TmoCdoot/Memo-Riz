@@ -236,9 +236,9 @@ function getMemoLocalStorage() {
 
 }
 
+//load darkmode open extension
 function starDarkmode() {
     
-    console.log(localStorage)
     if (localStorage.getItem('darkMode')) {
 
         if (localStorage.getItem('darkMode') == "true") {
@@ -302,21 +302,16 @@ function addMemoOnHtml(tabMemo) {
         }
 
     }
-    console.log(tabMemo)
+    
     if (tabMemo.length == 1) {
 
         let divNoMemo = document.createElement('div')
-
         divNoMemo.className = 'no-memo'
-
         let text = document.createTextNode("No memo")
-
         divNoMemo.appendChild(text)
-
         memoContener.appendChild(divNoMemo)
 
     }
-
 
 }
 
