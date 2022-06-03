@@ -124,7 +124,7 @@ function activeInteract() {
     //load data edit memo
     document.querySelectorAll('.memo-text-area').forEach(item => {
         item.addEventListener('click', event => {
-
+            console.log(event)
             showMemo("view")
             const index = event.composedPath()[0].id
             const memo = tabMemo[index]
@@ -271,6 +271,8 @@ function addMemoOnHtml(tabMemo) {
             let divMemoParam = document.createElement('div')
             let divMemoText = document.createElement('div')
 
+            let test = document.createElement('textarea')
+
 
             divContener.className = "memo-container";
             divContener.id = i
@@ -285,10 +287,20 @@ function addMemoOnHtml(tabMemo) {
             divMemoText.className = "memo-text-area"
             divMemoText.id = i
 
+            test.className = "text-view"
+            test.disabled = "disabled"
+            test.id = i
+            
+
             let title = document.createTextNode(tabMemo[i].title)
             divMemoTitle.appendChild(title)
             let text = document.createTextNode(tabMemo[i].data)
-            divMemoText.appendChild(text)
+            //divMemoText.appendChild(text)
+
+            test.value = tabMemo[i].data
+            console.log(tabMemo[i].data.length)
+            divMemoText.appendChild(test)
+            test.style.height = tabMemo[i].data.length*2 + 'px'
 
             divContenerCenter.appendChild(divMemoStatut)
             divContenerCenter.appendChild(divMemoTitle)

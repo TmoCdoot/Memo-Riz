@@ -236,7 +236,8 @@ body {
     margin-bottom: 20px;
     width: 350px;
     padding-bottom: 2px;
-
+    max-height: 150px;
+    overflow: hidden;
 }
 
 .container-center {
@@ -521,4 +522,18 @@ body {
     font-style: normal;
     font-weight: 600;
     font-size: 15px;
+}
+
+.text-view {
+    color: var(--textColor);
+    width: 100%;
+    background: none;
+    overflow-y: hidden;
+    border: none;
+    resize: none;
+    height: auto;
+    font-family: 'Epilogue';
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
 }
