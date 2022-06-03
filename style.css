@@ -358,6 +358,8 @@ body {
     font-family: 'Epilogue';
     font-style: normal;
     font-weight: 600;
+    background: none;
+    resize: none;
 }
 .form-textarea textarea {
     width: 95%;

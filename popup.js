@@ -130,7 +130,7 @@ function activeInteract() {
             const memo = tabMemo[index]
             viewEdit.id = index
             viewTitle.innerHTML = memo.title
-            viewTextarea.innerHTML = memo.data
+            viewTextarea.value = memo.data
 
         })
     })
