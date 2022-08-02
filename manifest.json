@@ -3,12 +3,23 @@
     "name": "Memo Riz",
     "description": "Mémo simple est rapide",
     "version": "0.1",
+    "host_permissions": [
+        "<all_urls>"
+    ],
     "action": {
         "default_icon": {
             "48": "images/logo48.png",
             "128": "images/logo128.png"
         },
         "default_title": "Clique pour memorizer",
-        "default_popup": "popup.html"
-    }
+        "default_popup": "Popup.html"
+    },
+    "background": {
+        "service_worker": "Background.js"
+    },
+    "permissions": [
+        "tabs", 
+        "storage",
+        "scripting"
+    ]
 }

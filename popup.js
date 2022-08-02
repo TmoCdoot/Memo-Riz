@@ -32,14 +32,18 @@ starDarkmode()
 getMemoLocalStorage()
 addMemoOnHtml(tabMemo)
 activeInteract()
+chrome.storage.local.set({localStorage: tabMemo});
 
 
+//choice page login or home
 
 
 
 btnDarkMode.addEventListener('click', () => {
 
     darkModeSwitch()
+
+    //document.location = "test.html"
 
 })
 
@@ -124,7 +128,6 @@ function activeInteract() {
     //load data edit memo
     document.querySelectorAll('.memo-text-area').forEach(item => {
         item.addEventListener('click', event => {
-            console.log(event)
             showMemo("view")
             const index = event.composedPath()[0].id
             const memo = tabMemo[index]
@@ -146,6 +149,8 @@ function activeInteract() {
 
         })
     })
+
+    chrome.storage.local.set({localStorage: tabMemo});
 }
 
 //switch mode
@@ -233,6 +238,7 @@ function getMemoLocalStorage() {
         tabMemo.push(JSON.parse(localStorage.getItem(localStorage.key(i))))
 
     }
+    console.log(tabMemo)
 
 }
 
@@ -295,10 +301,8 @@ function addMemoOnHtml(tabMemo) {
             let title = document.createTextNode(tabMemo[i].title)
             divMemoTitle.appendChild(title)
             let text = document.createTextNode(tabMemo[i].data)
-            //divMemoText.appendChild(text)
 
             test.value = tabMemo[i].data
-            console.log(tabMemo[i].data.length)
             divMemoText.appendChild(test)
             test.style.height = tabMemo[i].data.length*2 + 'px'
 
@@ -393,6 +397,10 @@ function darkModeSwitch() {
     }
 
 }
+
+// popup.js
+chrome.runtime.connect({ name: "popup"});
+
 
 
 
