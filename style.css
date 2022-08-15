@@ -91,7 +91,7 @@ body {
     background: #3243D7;
     border-radius: 10px;
 }
-.btn-text {
+.btn-text, .btn-text-add {
     transition: 0.3s;
     
     font-family: 'Epilogue';
