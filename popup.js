@@ -14,6 +14,7 @@ const btnTextAddMemo = document.querySelector('.btn-text')
 const memoContener = document.querySelector('.mr-memo')
 const viewTitle = document.querySelector('.view-title')
 const viewEdit = document.querySelector('.view-edit')
+const btnRelaod = document.querySelector('.test')
 
 
 const inputTitle = document.querySelector('.form-title-input')
@@ -26,13 +27,12 @@ const root = document.documentElement
 var darkMode = false
 var showFormMemo = false
 var isCheck = true
-var tabMemo = []
+var tabLocalStorage = []
 
 starDarkmode()
-getMemoLocalStorage()
-addMemoOnHtml(tabMemo)
-activeInteract()
-chrome.storage.local.set({localStorage: tabMemo});
+getLocalStorage()
+getDataFireBase()
+
 
 
 //choice page login or home
@@ -89,17 +89,19 @@ btnSendMemo.addEventListener('click', event => {
 
     if (event.composedPath()[0].id != "") {
         
-        localStorage.removeItem(tabMemo[event.composedPath()[0].id].title)
+        localStorage.removeItem(tabLocalStorage[event.composedPath()[0].id].title)
         const memoObject = {
             title: inputTitle.value,
             data: inputTextArea.value,
             isLock: isCheck,
+            time: Date.now()
         }
         localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
-        getMemoLocalStorage()
-        addMemoOnHtml(tabMemo)
+        getLocalStorage()
+        addMemoOnHtml(tabLocalStorage)
         activeInteract()
         showMemo('form')
+        addOnStorageLocal(tabLocalStorage)
 
     } else {
 
@@ -107,15 +109,24 @@ btnSendMemo.addEventListener('click', event => {
             title: inputTitle.value,
             data: inputTextArea.value,
             isLock: isCheck,
+            time: Date.now()
         }
         localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
-        getMemoLocalStorage()
-        addMemoOnHtml(tabMemo)
+        getLocalStorage()
+        addMemoOnHtml(tabLocalStorage)
         activeInteract()
         showMemo('form')
+        addOnStorageLocal(tabLocalStorage)
 
     }
     
+})
+
+btnRelaod.addEventListener('click', () => {
+    getLocalStorage()
+    getDataFireBase()
+    addMemoOnHtml(tabLocalStorage)
+    activeInteract()
 })
 
 
@@ -130,7 +141,7 @@ function activeInteract() {
         item.addEventListener('click', event => {
             showMemo("view")
             const index = event.composedPath()[0].id
-            const memo = tabMemo[index]
+            const memo = tabLocalStorage[index]
             viewEdit.id = index
             viewTitle.innerHTML = memo.title
             viewTextarea.value = memo.data
@@ -141,16 +152,40 @@ function activeInteract() {
     //remove memo
     document.querySelectorAll('.memo-param').forEach(item => {
         item.addEventListener('click', event => {
+            localStorage.removeItem(tabLocalStorage[event.composedPath()[0].id].title)
+            
+            
+            try {            
+                const firebaseConfig = {
+                  apiKey: "AIzaSyAFvfdBIwHEr27ysIRKmiZTKAEhI7wPJHE",
+                  authDomain: "memoriz-7e7ee.firebaseapp.com",
+                  projectId: "memoriz-7e7ee",
+                  storageBucket: "memoriz-7e7ee.appspot.com",
+                  messagingSenderId: "862117514720",
+                  appId: "1:862117514720:web:acacaa07ed5ef5a58faf85",
+                  measurementId: "G-RLMQSTJMR0"
+                };
+            
+              firebase.initializeApp(firebaseConfig)
+            
+              var db = firebase.firestore();
+              console.log(tabLocalStorage[event.composedPath()[0].id].title)
+            
+              db.collection('test').doc('byXxc6fsnPeYLI8juU8f').collection('memo').doc(tabLocalStorage[event.composedPath()[0].id].title).delete().then(() => {
+                addOnStorageLocal(tabLocalStorage)
+                getLocalStorage()
+                getDataFireBase()
+                addMemoOnHtml(tabLocalStorage)
+                activeInteract()
+              })             
 
-            localStorage.removeItem(tabMemo[event.composedPath()[0].id].title)
-            getMemoLocalStorage()
-            addMemoOnHtml(tabMemo)
-            activeInteract()
+            } catch (e) {
+                console.log(e)    
+            }  
 
         })
     })
 
-    chrome.storage.local.set({localStorage: tabMemo});
 }
 
 //switch mode
@@ -202,9 +237,9 @@ function showMemo(type, id) {
         btnSendMemo.id = id
         btnBlocAddMemo.id = id
         btnTextAddMemo.id = id
-        inputTitle.value = tabMemo[id].title
-        inputTextArea.value = tabMemo[id].data
-        if (tabMemo[id].isLock == true) {
+        inputTitle.value = tabLocalStorage[id].title
+        inputTextArea.value = tabLocalStorage[id].data
+        if (tabLocalStorage[id].isLock == true) {
             inputLock.checked = true
         } else {
             inputLock.checked = false
@@ -230,16 +265,48 @@ function showMemo(type, id) {
 }
 
 //get memo local storage
-function getMemoLocalStorage() {
+function getLocalStorage() {
 
-    tabMemo = []
+    tabLocalStorage = []
     for (var i = 0; i < localStorage.length; i++){
-
-        tabMemo.push(JSON.parse(localStorage.getItem(localStorage.key(i))))
-
+        tabLocalStorage.push(JSON.parse(localStorage.getItem(localStorage.key(i))))
     }
-    console.log(tabMemo)
+    
+    
+}
 
+function getDataFireBase() {
+    chrome.storage.sync.get(['FirebaseStorage'], function(result) {
+        var tabFirebase = result['FirebaseStorage'] 
+
+        console.log(tabFirebase)
+        console.log(tabLocalStorage)
+        
+        for (var itemTabFirebase in tabFirebase) {
+            for (var itemTabLocalStorage in tabLocalStorage ) {
+                if (tabFirebase[itemTabFirebase].title == tabLocalStorage[itemTabLocalStorage].title) {
+                    if (tabFirebase[itemTabFirebase].time >= tabLocalStorage[itemTabLocalStorage].time) {
+
+                        tabLocalStorage[itemTabLocalStorage].data = tabFirebase[itemTabFirebase].data
+                        tabLocalStorage[itemTabLocalStorage].isLock = tabFirebase[itemTabFirebase].isLock
+                        tabLocalStorage[itemTabLocalStorage].time = tabFirebase[itemTabFirebase].time
+
+                        localStorage.removeItem(tabFirebase[itemTabFirebase].title)
+                        const objectLocalStorage = {
+                            title: tabFirebase[itemTabFirebase].title,
+                            data: tabFirebase[itemTabFirebase].data,
+                            isLock: tabFirebase[itemTabFirebase].isLock,
+                            time: tabFirebase[itemTabFirebase].time
+                        }
+                        localStorage.setItem(tabFirebase[itemTabFirebase].title, JSON.stringify(objectLocalStorage))
+                    }
+                }
+                
+            }
+        }
+        addMemoOnHtml(tabLocalStorage)
+    });
+    
 }
 
 //load darkmode open extension
@@ -258,17 +325,15 @@ function starDarkmode() {
 }
 
 //show memo
-function addMemoOnHtml(tabMemo) {   
+function addMemoOnHtml(tabLocalStorage) {   
 
     while (memoContener.firstChild) { 
 
         memoContener.removeChild(memoContener.firstChild)
-        
     }
+    for (var i = 0; i < tabLocalStorage.length; i++){
 
-    for (var i = 0; i < tabMemo.length; i++){
-
-        if (tabMemo[i].title != undefined) {
+        if (tabLocalStorage[i].title != undefined) {
 
             let divContener = document.createElement('div')
             let divContenerCenter = document.createElement('div')
@@ -298,13 +363,13 @@ function addMemoOnHtml(tabMemo) {
             test.id = i
             
 
-            let title = document.createTextNode(tabMemo[i].title)
+            let title = document.createTextNode(tabLocalStorage[i].title)
             divMemoTitle.appendChild(title)
-            let text = document.createTextNode(tabMemo[i].data)
+            let text = document.createTextNode(tabLocalStorage[i].data)
 
-            test.value = tabMemo[i].data
+            test.value = tabLocalStorage[i].data
             divMemoText.appendChild(test)
-            test.style.height = tabMemo[i].data.length*2 + 'px'
+            test.style.height = tabLocalStorage[i].data.length*2 + 'px'
 
             divContenerCenter.appendChild(divMemoStatut)
             divContenerCenter.appendChild(divMemoTitle)
@@ -319,7 +384,7 @@ function addMemoOnHtml(tabMemo) {
 
     }
     
-    if (tabMemo.length == 1) {
+    if (tabLocalStorage.length == 1) {
 
         let divNoMemo = document.createElement('div')
         divNoMemo.className = 'no-memo'
@@ -329,6 +394,7 @@ function addMemoOnHtml(tabMemo) {
 
     }
 
+    activeInteract()
 }
 
 
@@ -398,8 +464,37 @@ function darkModeSwitch() {
 
 }
 
+function addOnStorageLocal(data) {
+    var tab = []
+    
+    chrome.storage.sync.remove('FirebaseStorage');
+    for (var item in data) {
+        if (data[item] != false && data[item] != true) {
+            var val = {
+                data: data[item].data,
+                isLock: data[item].isLock,
+                title: data[item].title,
+                time: data[item].time
+            }
+            tab.push(val)
+        }
+    }
+    chrome.storage.sync.set({FirebaseStorage: tab});
+}
+
+
+
 // popup.js
 chrome.runtime.connect({ name: "popup"});
+
+
+
+
+
+
+
+
+
 
 
 
