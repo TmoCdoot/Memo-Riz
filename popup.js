@@ -14,7 +14,11 @@ const btnTextAddMemo = document.querySelector('.btn-text')
 const memoContener = document.querySelector('.mr-memo')
 const viewTitle = document.querySelector('.view-title')
 const viewEdit = document.querySelector('.view-edit')
-const btnRelaod = document.querySelector('.test')
+const mainContainer = document.querySelector('.mr-main-container')
+const viewConnect = document.querySelector('.mr-connect')
+const spanSwitchConnect = document.querySelector('.switch-span-connect')
+const btnSwitchConnect = document.querySelector('.switch-type-connect')
+const btnIdentifiantConnect = document.querySelector('.btn-identifiant-connect')
 
 
 const inputTitle = document.querySelector('.form-title-input')
@@ -30,12 +34,42 @@ var isCheck = true
 var tabLocalStorage = []
 
 starDarkmode()
-getLocalStorage()
-getDataFireBase()
-
-
+//getLocalStorage()
+//getDataFireBase()
 
 //choice page login or home
+if (localStorage.getItem('user') != undefined) {
+    viewConnect.style.display = "none"
+    getLocalStorage()
+    getDataFireBase()
+} else {
+    mainContainer.style.display = "none"
+
+    var state = "logIn"
+    btnSwitchConnect.addEventListener('click', () => {
+        if (state == "logIn") {
+
+            spanSwitchConnect.textContent = "Have account ?"
+            btnSwitchConnect.textContent = " Log in"
+            btnSwitchConnect.style.marginLeft = "95px"
+            btnIdentifiantConnect.textContent = "Sign up"
+            state = "singUp"
+        
+        } else {
+
+            spanSwitchConnect.textContent = "No account ?"
+            btnSwitchConnect.textContent = " Create us"
+            btnSwitchConnect.style.marginLeft = "85px"
+            btnIdentifiantConnect.textContent = "Log in"
+            state = "logIn"
+        }
+    })
+    console.log("fe")
+
+    //{"pseudo":"toto","uid":"fezfez"}
+}
+
+
 
 
 
@@ -122,13 +156,6 @@ btnSendMemo.addEventListener('click', event => {
     
 })
 
-btnRelaod.addEventListener('click', () => {
-    getLocalStorage()
-    getDataFireBase()
-    addMemoOnHtml(tabLocalStorage)
-    activeInteract()
-})
-
 
 
 
@@ -169,11 +196,10 @@ function activeInteract() {
               firebase.initializeApp(firebaseConfig)
             
               var db = firebase.firestore();
-              console.log(tabLocalStorage[event.composedPath()[0].id].title)
             
               db.collection('test').doc('byXxc6fsnPeYLI8juU8f').collection('memo').doc(tabLocalStorage[event.composedPath()[0].id].title).delete().then(() => {
-                addOnStorageLocal(tabLocalStorage)
                 getLocalStorage()
+                addOnStorageLocal(tabLocalStorage)
                 getDataFireBase()
                 addMemoOnHtml(tabLocalStorage)
                 activeInteract()
@@ -275,33 +301,52 @@ function getLocalStorage() {
     
 }
 
+//get memo on firebase storage
 function getDataFireBase() {
     chrome.storage.sync.get(['FirebaseStorage'], function(result) {
         var tabFirebase = result['FirebaseStorage'] 
+        var exit
 
-        console.log(tabFirebase)
-        console.log(tabLocalStorage)
+        /* console.log(tabFirebase)
+        console.log(tabLocalStorage) */
+
+        if (tabFirebase.length > 0) {
+            
+            for (var itemTabFirebase in tabFirebase) {
+                if (tabLocalStorage.length > 2) {
+                    for (var itemTabLocalStorage in tabLocalStorage ) {
+                        if (tabFirebase[itemTabFirebase].title == tabLocalStorage[itemTabLocalStorage].title) {
+                            if (tabFirebase[itemTabFirebase].time >= tabLocalStorage[itemTabLocalStorage].time) {
         
-        for (var itemTabFirebase in tabFirebase) {
-            for (var itemTabLocalStorage in tabLocalStorage ) {
-                if (tabFirebase[itemTabFirebase].title == tabLocalStorage[itemTabLocalStorage].title) {
-                    if (tabFirebase[itemTabFirebase].time >= tabLocalStorage[itemTabLocalStorage].time) {
-
-                        tabLocalStorage[itemTabLocalStorage].data = tabFirebase[itemTabFirebase].data
-                        tabLocalStorage[itemTabLocalStorage].isLock = tabFirebase[itemTabFirebase].isLock
-                        tabLocalStorage[itemTabLocalStorage].time = tabFirebase[itemTabFirebase].time
-
-                        localStorage.removeItem(tabFirebase[itemTabFirebase].title)
-                        const objectLocalStorage = {
-                            title: tabFirebase[itemTabFirebase].title,
-                            data: tabFirebase[itemTabFirebase].data,
-                            isLock: tabFirebase[itemTabFirebase].isLock,
-                            time: tabFirebase[itemTabFirebase].time
+                                tabLocalStorage[itemTabLocalStorage].data = tabFirebase[itemTabFirebase].data
+                                tabLocalStorage[itemTabLocalStorage].isLock = tabFirebase[itemTabFirebase].isLock
+                                tabLocalStorage[itemTabLocalStorage].time = tabFirebase[itemTabFirebase].time
+        
+                                localStorage.removeItem(tabFirebase[itemTabFirebase].title)
+                                const objectLocalStorage = {
+                                    title: tabFirebase[itemTabFirebase].title,
+                                    data: tabFirebase[itemTabFirebase].data,
+                                    isLock: tabFirebase[itemTabFirebase].isLock,
+                                    time: tabFirebase[itemTabFirebase].time
+                                }
+                                localStorage.setItem(tabFirebase[itemTabFirebase].title, JSON.stringify(objectLocalStorage))
+                            }
                         }
-                        localStorage.setItem(tabFirebase[itemTabFirebase].title, JSON.stringify(objectLocalStorage))
+                        exit = true
                     }
+                } else {
+                    const objectLocalStorage = {
+                        title: tabFirebase[itemTabFirebase].title,
+                        data: tabFirebase[itemTabFirebase].data,
+                        isLock: tabFirebase[itemTabFirebase].isLock,
+                        time: tabFirebase[itemTabFirebase].time
+                    }
+                    localStorage.setItem(tabFirebase[itemTabFirebase].title, JSON.stringify(objectLocalStorage))
+                    exit = false
                 }
-                
+            }
+            if (exit == false) {
+                getLocalStorage()
             }
         }
         addMemoOnHtml(tabLocalStorage)
@@ -397,7 +442,7 @@ function addMemoOnHtml(tabLocalStorage) {
     activeInteract()
 }
 
-
+//switch mode
 function darkModeSwitch() {
 
     if (darkMode) {
@@ -464,12 +509,14 @@ function darkModeSwitch() {
 
 }
 
+//add on local storage
 function addOnStorageLocal(data) {
     var tab = []
     
     chrome.storage.sync.remove('FirebaseStorage');
     for (var item in data) {
-        if (data[item] != false && data[item] != true) {
+        if (data[item] != false && data[item] != true && data[item].uid == undefined) {
+            console.log(data[item])
             var val = {
                 data: data[item].data,
                 isLock: data[item].isLock,

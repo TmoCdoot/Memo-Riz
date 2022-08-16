@@ -91,7 +91,7 @@ body {
     background: #3243D7;
     border-radius: 10px;
 }
-.btn-text, .btn-text-add {
+.btn-text, .btn-text-add, .btn-identifiant-connect {
     transition: 0.3s;
     
     font-family: 'Epilogue';
@@ -536,4 +536,57 @@ body {
     font-weight: 600;
     font-size: 12px;
     cursor: pointer;
+}
+
+.mr-connect {
+    /*border: 1px solid red;*/
+    height: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.mr-connect label {
+    text-align: left;
+    width: 80%;
+    font-style: italic;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.mr-connect input {
+    height: 40px;
+    width: 80%;
+    border-radius: 10px;
+    border: none;
+    background: var(--bgMemo);
+    color: var(--textColorForm)
+}
+
+.mr-connect .form-btn {
+    left: 39px;
+    top: 350px;
+}
+.mr-connect .btn-bloc {
+    width: 320px;
+}
+
+.mr-connect span {
+    position: absolute;
+    bottom: 20px;
+}
+.switch-type-connect {
+    color: #3243D7;
+    cursor: pointer;
+}
+
+.container-switch {
+    position: absolute;
+    width: 150px;
+    bottom: 10px;
+}
+
+.switch-type-connect {
+    margin-left: 85px;
 }
