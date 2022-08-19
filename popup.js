@@ -19,13 +19,11 @@ const viewConnect = document.querySelector('.mr-connect')
 const spanSwitchConnect = document.querySelector('.switch-span-connect')
 const btnSwitchConnect = document.querySelector('.switch-type-connect')
 const btnIdentifiantConnect = document.querySelector('.btn-identifiant-connect')
-
-
+const btnConnect = document.querySelector('.form-btn-connect')
+const inputIdentifiant = document.querySelector('.form-identifiant-input')
 const inputTitle = document.querySelector('.form-title-input')
 const inputTextArea = document.querySelector('.form-textarea-input')
 const inputLock = document.querySelector('.form-lock-input')
-
-
 const root = document.documentElement 
 
 var darkMode = false
@@ -33,19 +31,22 @@ var showFormMemo = false
 var isCheck = true
 var tabLocalStorage = []
 
+const hash = async ({ algorithm = "SHA-256", message }) => Array.prototype.map.call(new Uint8Array(await crypto.subtle.digest(algorithm, new TextEncoder().encode(message))),(x) => ("0" + x.toString(16)).slice(-2)).join("");
+
 starDarkmode()
-//getLocalStorage()
-//getDataFireBase()
+
 
 //choice page login or home
 if (localStorage.getItem('user') != undefined) {
     viewConnect.style.display = "none"
+
     getLocalStorage()
-    getDataFireBase()
+    getFirebaseLocalData()
 } else {
     mainContainer.style.display = "none"
 
     var state = "logIn"
+
     btnSwitchConnect.addEventListener('click', () => {
         if (state == "logIn") {
 
@@ -64,9 +65,18 @@ if (localStorage.getItem('user') != undefined) {
             state = "logIn"
         }
     })
-    console.log("fe")
 
-    //{"pseudo":"toto","uid":"fezfez"}
+    btnConnect.addEventListener('click', () => {
+        if (state == "singUp") {
+            hash({message: inputIdentifiant.value}).then((result) => {
+                singUp(result, inputIdentifiant.value)
+            })
+        } else {
+            hash({message: inputIdentifiant.value}).then((result) => {
+                logIn(result, inputIdentifiant.value)
+            })
+        }
+    })
 }
 
 
@@ -76,8 +86,6 @@ if (localStorage.getItem('user') != undefined) {
 btnDarkMode.addEventListener('click', () => {
 
     darkModeSwitch()
-
-    //document.location = "test.html"
 
 })
 
@@ -108,13 +116,10 @@ btnCloseViewMemo.addEventListener('click', () => {
 inputLock.addEventListener('click', () => {
 
     if (isCheck) {
-
         isCheck = false
 
     } else {
-
         isCheck = true
-
     }
 
 })
@@ -122,36 +127,38 @@ inputLock.addEventListener('click', () => {
 btnSendMemo.addEventListener('click', event => {
 
     if (event.composedPath()[0].id != "") {
-        
         localStorage.removeItem(tabLocalStorage[event.composedPath()[0].id].title)
+
         const memoObject = {
             title: inputTitle.value,
             data: inputTextArea.value,
             isLock: isCheck,
             time: Date.now()
         }
+
         localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
+
         getLocalStorage()
         addMemoOnHtml(tabLocalStorage)
-        activeInteract()
         showMemo('form')
         addOnStorageLocal(tabLocalStorage)
-
+        activeInteract()
     } else {
-
         const memoObject = {
             title: inputTitle.value,
             data: inputTextArea.value,
             isLock: isCheck,
             time: Date.now()
         }
-        localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
-        getLocalStorage()
-        addMemoOnHtml(tabLocalStorage)
-        activeInteract()
-        showMemo('form')
-        addOnStorageLocal(tabLocalStorage)
 
+        localStorage.setItem(inputTitle.value, JSON.stringify(memoObject))
+
+        getLocalStorage()
+        addOnStorageLocal(tabLocalStorage)
+        getFirebaseLocalData()
+        addMemoOnHtml(tabLocalStorage)
+        showMemo('form')
+        activeInteract()
     }
     
 })
@@ -166,9 +173,11 @@ function activeInteract() {
     //load data edit memo
     document.querySelectorAll('.memo-text-area').forEach(item => {
         item.addEventListener('click', event => {
-            showMemo("view")
+            showMemo()
+
             const index = event.composedPath()[0].id
             const memo = tabLocalStorage[index]
+
             viewEdit.id = index
             viewTitle.innerHTML = memo.title
             viewTextarea.value = memo.data
@@ -181,7 +190,6 @@ function activeInteract() {
         item.addEventListener('click', event => {
             localStorage.removeItem(tabLocalStorage[event.composedPath()[0].id].title)
             
-            
             try {            
                 const firebaseConfig = {
                   apiKey: "AIzaSyAFvfdBIwHEr27ysIRKmiZTKAEhI7wPJHE",
@@ -193,17 +201,17 @@ function activeInteract() {
                   measurementId: "G-RLMQSTJMR0"
                 };
             
-              firebase.initializeApp(firebaseConfig)
-            
-              var db = firebase.firestore();
-            
-              db.collection('test').doc('byXxc6fsnPeYLI8juU8f').collection('memo').doc(tabLocalStorage[event.composedPath()[0].id].title).delete().then(() => {
-                getLocalStorage()
-                addOnStorageLocal(tabLocalStorage)
-                getDataFireBase()
-                addMemoOnHtml(tabLocalStorage)
-                activeInteract()
-              })             
+                firebase.initializeApp(firebaseConfig)
+                
+                var db = firebase.firestore();
+
+                db.collection('memo_data').doc(JSON.parse(localStorage.getItem("user")).uid).collection('user_memo').doc(tabLocalStorage[event.composedPath()[0].id].title).delete().then(() => {
+                    getLocalStorage()
+                    addOnStorageLocal(tabLocalStorage)
+                    getFirebaseLocalData()
+                    addMemoOnHtml(tabLocalStorage)
+                    activeInteract()
+                })             
 
             } catch (e) {
                 console.log(e)    
@@ -218,9 +226,7 @@ function activeInteract() {
 function switchProperties(properties) {
 
     for (let el in properties) {
-
         root.style.setProperty('--' + el, properties[el])
-
     }
 
 }
@@ -231,49 +237,48 @@ function showMemo(type, id) {
     if (type == "form") {
 
         if (showFormMemo) {
-
             filterMemo.style.visibility = "collapse"
             formMemo.style.visibility = "collapse"
             inputTitle.value = ""
+            inputTitle.removeAttribute('disabled')
             inputTextArea.value = ""
             inputLock.checked = true
             isCheck = true
             showFormMemo = false
+
             document.querySelector('.form-btn').id = ""
-            ,document.querySelector('.btn-bloc').id = ""
+            document.querySelector('.btn-bloc').id = ""
             document.querySelector('.btn-text').id = ""
-
         } else {
-
             filterMemo.style.visibility = "initial"
             formMemo.style.visibility = "initial"
             showFormMemo = true
-
         }
 
     } else if (type == "preloadEdit") {
-
         filterMemoView.style.visibility = "collapse"
         viewMemo.style.visibility = "collapse"
         showFormMemo = false
+
         showMemo("goEdit", id)
 
     } else if (type == "goEdit") {
-
         btnSendMemo.id = id
         btnBlocAddMemo.id = id
         btnTextAddMemo.id = id
         inputTitle.value = tabLocalStorage[id].title
+        inputTitle.disabled = "disabled"
         inputTextArea.value = tabLocalStorage[id].data
+
         if (tabLocalStorage[id].isLock == true) {
             inputLock.checked = true
         } else {
             inputLock.checked = false
         }
+
         filterMemo.style.visibility = "initial"
         formMemo.style.visibility = "initial"
         showFormMemo = true
-
     } else {
 
         if (showFormMemo) {
@@ -298,37 +303,38 @@ function getLocalStorage() {
         tabLocalStorage.push(JSON.parse(localStorage.getItem(localStorage.key(i))))
     }
     
-    
 }
 
 //get memo on firebase storage
-function getDataFireBase() {
+function getFirebaseLocalData() {
     chrome.storage.sync.get(['FirebaseStorage'], function(result) {
         var tabFirebase = result['FirebaseStorage'] 
         var exit
 
-        /* console.log(tabFirebase)
-        console.log(tabLocalStorage) */
-
         if (tabFirebase.length > 0) {
             
             for (var itemTabFirebase in tabFirebase) {
+
                 if (tabLocalStorage.length > 2) {
+
                     for (var itemTabLocalStorage in tabLocalStorage ) {
+
                         if (tabFirebase[itemTabFirebase].title == tabLocalStorage[itemTabLocalStorage].title) {
+
                             if (tabFirebase[itemTabFirebase].time >= tabLocalStorage[itemTabLocalStorage].time) {
-        
                                 tabLocalStorage[itemTabLocalStorage].data = tabFirebase[itemTabFirebase].data
                                 tabLocalStorage[itemTabLocalStorage].isLock = tabFirebase[itemTabFirebase].isLock
                                 tabLocalStorage[itemTabLocalStorage].time = tabFirebase[itemTabFirebase].time
         
                                 localStorage.removeItem(tabFirebase[itemTabFirebase].title)
+
                                 const objectLocalStorage = {
                                     title: tabFirebase[itemTabFirebase].title,
                                     data: tabFirebase[itemTabFirebase].data,
                                     isLock: tabFirebase[itemTabFirebase].isLock,
                                     time: tabFirebase[itemTabFirebase].time
                                 }
+
                                 localStorage.setItem(tabFirebase[itemTabFirebase].title, JSON.stringify(objectLocalStorage))
                             }
                         }
@@ -341,7 +347,9 @@ function getDataFireBase() {
                         isLock: tabFirebase[itemTabFirebase].isLock,
                         time: tabFirebase[itemTabFirebase].time
                     }
+
                     localStorage.setItem(tabFirebase[itemTabFirebase].title, JSON.stringify(objectLocalStorage))
+
                     exit = false
                 }
             }
@@ -349,6 +357,7 @@ function getDataFireBase() {
                 getLocalStorage()
             }
         }
+
         addMemoOnHtml(tabLocalStorage)
     });
     
@@ -360,9 +369,7 @@ function starDarkmode() {
     if (localStorage.getItem('darkMode')) {
 
         if (localStorage.getItem('darkMode') == "true") {
-
             darkModeSwitch()
-    
         }
 
     }
@@ -373,9 +380,9 @@ function starDarkmode() {
 function addMemoOnHtml(tabLocalStorage) {   
 
     while (memoContener.firstChild) { 
-
         memoContener.removeChild(memoContener.firstChild)
     }
+    
     for (var i = 0; i < tabLocalStorage.length; i++){
 
         if (tabLocalStorage[i].title != undefined) {
@@ -386,7 +393,7 @@ function addMemoOnHtml(tabLocalStorage) {
             let divMemoTitle = document.createElement('div')
             let divMemoParam = document.createElement('div')
             let divMemoText = document.createElement('div')
-
+            let title = document.createTextNode(tabLocalStorage[i].title)
             let test = document.createElement('textarea')
 
 
@@ -402,38 +409,31 @@ function addMemoOnHtml(tabLocalStorage) {
             divMemoParam.id = i
             divMemoText.className = "memo-text-area"
             divMemoText.id = i
-
             test.className = "text-view"
             test.disabled = "disabled"
             test.id = i
-            
-
-            let title = document.createTextNode(tabLocalStorage[i].title)
-            divMemoTitle.appendChild(title)
-            let text = document.createTextNode(tabLocalStorage[i].data)
-
             test.value = tabLocalStorage[i].data
-            divMemoText.appendChild(test)
             test.style.height = tabLocalStorage[i].data.length*2 + 'px'
-
+           
+            divMemoTitle.appendChild(title)
+            divMemoText.appendChild(test)
             divContenerCenter.appendChild(divMemoStatut)
             divContenerCenter.appendChild(divMemoTitle)
             divContenerCenter.appendChild(divMemoParam)
-
             divContener.appendChild(divContenerCenter, divMemoText)
             divContener.appendChild(divMemoText)
-
             memoContener.appendChild(divContener)
-
         }
 
     }
     
-    if (tabLocalStorage.length == 1) {
+    if (tabLocalStorage.length == 2) {
 
         let divNoMemo = document.createElement('div')
-        divNoMemo.className = 'no-memo'
         let text = document.createTextNode("No memo")
+
+        divNoMemo.className = 'no-memo'
+        
         divNoMemo.appendChild(text)
         memoContener.appendChild(divNoMemo)
 
@@ -448,6 +448,7 @@ function darkModeSwitch() {
     if (darkMode) {
 
         darkMode = false
+
         localStorage.removeItem("darkMode")
         localStorage.setItem("darkMode", false)
 
@@ -470,6 +471,7 @@ function darkModeSwitch() {
             imgLockColor: 'url(images/lock.png)',
             imgUnLockColor: 'url(images/unlock.png)'
         }
+
         darkModeBtn.style.top = "29px"
         darkModeBtn.style.left = "25px"
 
@@ -478,6 +480,7 @@ function darkModeSwitch() {
     } else {
 
         darkMode = true
+
         localStorage.removeItem("darkMode")
         localStorage.setItem("darkMode", true)
 
@@ -500,6 +503,7 @@ function darkModeSwitch() {
             imgLockColor: 'url(images/lock-white.png)',
             imgUnLockColor: 'url(images/unlock-white.png)'
         }
+
         darkModeBtn.style.top = "15px"
         darkModeBtn.style.left = "20px"
 
@@ -514,22 +518,135 @@ function addOnStorageLocal(data) {
     var tab = []
     
     chrome.storage.sync.remove('FirebaseStorage');
+
     for (var item in data) {
+
         if (data[item] != false && data[item] != true && data[item].uid == undefined) {
-            console.log(data[item])
+
             var val = {
                 data: data[item].data,
                 isLock: data[item].isLock,
                 title: data[item].title,
                 time: data[item].time
             }
+
             tab.push(val)
         }
     }
     chrome.storage.sync.set({FirebaseStorage: tab});
 }
 
+function singUp(uid, id) {
+    try {            
+        const firebaseConfig = {
+        apiKey: "AIzaSyAFvfdBIwHEr27ysIRKmiZTKAEhI7wPJHE",
+        authDomain: "memoriz-7e7ee.firebaseapp.com",
+        projectId: "memoriz-7e7ee",
+        storageBucket: "memoriz-7e7ee.appspot.com",
+        messagingSenderId: "862117514720",
+        appId: "1:862117514720:web:acacaa07ed5ef5a58faf85",
+        measurementId: "G-RLMQSTJMR0"
+        };
 
+        firebase.initializeApp(firebaseConfig)
+        
+        var db = firebase.firestore();
+        
+        db.collection('memo_data').doc(uid).set({
+            identifiant: id,
+            uid: uid
+        })
+    } catch (e) {
+        console.log(e)    
+    }
+}
+
+function logIn(uid, id) {
+    try {            
+        const firebaseConfig = {
+        apiKey: "AIzaSyAFvfdBIwHEr27ysIRKmiZTKAEhI7wPJHE",
+        authDomain: "memoriz-7e7ee.firebaseapp.com",
+        projectId: "memoriz-7e7ee",
+        storageBucket: "memoriz-7e7ee.appspot.com",
+        messagingSenderId: "862117514720",
+        appId: "1:862117514720:web:acacaa07ed5ef5a58faf85",
+        measurementId: "G-RLMQSTJMR0"
+        };
+
+        firebase.initializeApp(firebaseConfig)
+        
+        var db = firebase.firestore();
+        
+        db.collection('memo_data').doc(uid).get().then((snapshot) => {
+
+            if (snapshot.data() != undefined) {
+                localStorage.removeItem("user")
+
+                const userObject = {
+                    uid: snapshot.data().uid,
+                    pseudo: snapshot.data().identifiant
+                }
+
+                localStorage.setItem("user", JSON.stringify(userObject))
+
+                mainContainer.style.display = "initial"
+                viewConnect.style.display = "none"
+
+                chrome.storage.sync.remove("user")
+                chrome.storage.sync.set({user: userObject});
+                
+                getFirebaseExterneData(snapshot.data().uid)
+                getLocalStorage()
+                getFirebaseLocalData()
+            }
+        })
+    } catch (e) {
+        console.log(e)    
+    }
+}
+
+function getFirebaseExterneData(uid) {
+    try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyAFvfdBIwHEr27ysIRKmiZTKAEhI7wPJHE",
+          authDomain: "memoriz-7e7ee.firebaseapp.com",
+          projectId: "memoriz-7e7ee",
+          storageBucket: "memoriz-7e7ee.appspot.com",
+          messagingSenderId: "862117514720",
+          appId: "1:862117514720:web:acacaa07ed5ef5a58faf85",
+          measurementId: "G-RLMQSTJMR0"
+        };
+    
+      firebase.initializeApp(firebaseConfig)
+    
+      var db = firebase.firestore();
+    
+      db.collection('memo_data').doc(uid).collection('user_memo').get().then((snapshot) => {
+        var tabData = []
+
+        snapshot.forEach(doc => {
+            tabData.push(doc.data())
+        });
+    
+        var tab = []
+
+        for (var item in tabData) {
+            var val = {
+                data: tabData[item].data,
+                isLock: tabData[item].isLock,
+                title: tabData[item].title,
+                time: tabData[item].time
+            }
+            tab.push(val)
+        }
+    
+        chrome.storage.sync.set({FirebaseStorage: tab});
+      })
+    
+    } catch (e) {
+        console.log(e)    
+    }
+}
 
 // popup.js
 chrome.runtime.connect({ name: "popup"});

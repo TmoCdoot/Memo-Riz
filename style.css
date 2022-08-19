@@ -428,7 +428,7 @@ body {
     color: var(--textColorForm);
 }
 
-.form-btn {
+.form-btn, .form-btn-connect {
     position: absolute;
     left: 33px;
     top: 441px;
@@ -436,12 +436,12 @@ body {
     cursor: pointer;
 }
 
-.form-btn .btn-bloc {
+.form-btn .btn-bloc, .form-btn-connect {
     width: 300px;
     transition: none;
 }
 
-.form-btn .btn-bloc .btn-text {
+.form-btn .btn-bloc .btn-text, .form-btn-connect {
     transition: none;
 }
 
@@ -564,7 +564,7 @@ body {
     color: var(--textColorForm)
 }
 
-.mr-connect .form-btn {
+.mr-connect .form-btn, .form-btn-connect {
     left: 39px;
     top: 350px;
 }
